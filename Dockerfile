@@ -23,12 +23,14 @@ RUN mkdir /CLIProxyAPI
 COPY --from=builder ./app/CLIProxyAPIPlus /CLIProxyAPI/CLIProxyAPIPlus
 
 COPY config.example.yaml /CLIProxyAPI/config.example.yaml
+COPY static /CLIProxyAPI/static
 
 WORKDIR /CLIProxyAPI
 
 EXPOSE 8317
 
 ENV TZ=Asia/Shanghai
+ENV MANAGEMENT_STATIC_PATH=/CLIProxyAPI/static/management.html
 
 RUN cp /usr/share/zoneinfo/${TZ} /etc/localtime && echo "${TZ}" > /etc/timezone
 

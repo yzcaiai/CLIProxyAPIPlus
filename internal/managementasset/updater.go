@@ -93,6 +93,10 @@ func runAutoUpdater(ctx context.Context) {
 			log.Debug("management asset auto-updater skipped: disable-auto-update-panel is enabled")
 			return
 		}
+		if explicit := pinnedManagementAssetPath(); explicit != "" {
+			log.Debugf("management asset auto-updater skipped: MANAGEMENT_STATIC_PATH is pinned to %s", explicit)
+			return
+		}
 
 		configPath, _ := schedulerConfigPath.Load().(string)
 		staticDir := StaticDir(configPath)
@@ -118,6 +122,22 @@ func newHTTPClient(proxyURL string) *http.Client {
 	util.SetProxy(sdkCfg, client)
 
 	return client
+}
+
+func pinnedManagementAssetPath() string {
+	override := strings.TrimSpace(os.Getenv("MANAGEMENT_STATIC_PATH"))
+	if override == "" {
+		return ""
+	}
+	cleaned := filepath.Clean(override)
+	if !strings.EqualFold(filepath.Base(cleaned), managementAssetName) {
+		return ""
+	}
+	info, err := os.Stat(cleaned)
+	if err != nil || info.IsDir() {
+		return ""
+	}
+	return cleaned
 }
 
 type releaseAsset struct {
