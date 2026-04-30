@@ -2,6 +2,15 @@ package registry
 
 import "testing"
 
+func hasModel(models []*ModelInfo, modelID string) bool {
+	for _, model := range models {
+		if model != nil && model.ID == modelID {
+			return true
+		}
+	}
+	return false
+}
+
 func TestGitHubCopilotGeminiModelsAreChatOnly(t *testing.T) {
 	models := GetGitHubCopilotModels()
 	required := map[string]bool{
@@ -24,6 +33,25 @@ func TestGitHubCopilotGeminiModelsAreChatOnly(t *testing.T) {
 	for modelID, found := range required {
 		if !found {
 			t.Fatalf("expected GitHub Copilot model %q in definitions", modelID)
+		}
+	}
+}
+
+func TestCodexCatalogIncludesGPT55(t *testing.T) {
+	cases := []struct {
+		name   string
+		models []*ModelInfo
+	}{
+		{name: "codex-free", models: GetCodexFreeModels()},
+		{name: "codex-team", models: GetCodexTeamModels()},
+		{name: "codex-plus", models: GetCodexPlusModels()},
+		{name: "codex-pro", models: GetCodexProModels()},
+		{name: "codex-static-channel", models: GetStaticModelDefinitionsByChannel("codex")},
+	}
+
+	for _, tc := range cases {
+		if !hasModel(tc.models, "gpt-5.5") {
+			t.Fatalf("%s is missing gpt-5.5", tc.name)
 		}
 	}
 }
