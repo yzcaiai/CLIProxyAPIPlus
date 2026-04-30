@@ -55,3 +55,9 @@ func TestCodexCatalogIncludesGPT55(t *testing.T) {
 		}
 	}
 }
+
+func TestEmbeddedModelsCatalogIsValid(t *testing.T) {
+	if err := loadModelsFromBytes(embeddedModelsJSON, "embed-test"); err != nil {
+		t.Fatalf("embedded models catalog is invalid: %v", err)
+	}
+}
