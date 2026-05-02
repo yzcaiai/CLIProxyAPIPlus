@@ -37,7 +37,7 @@ func TestGitHubCopilotGeminiModelsAreChatOnly(t *testing.T) {
 	}
 }
 
-func TestCodexCatalogIncludesGPT55(t *testing.T) {
+func TestCodexCatalogIncludesLatestCodexModels(t *testing.T) {
 	cases := []struct {
 		name   string
 		models []*ModelInfo
@@ -49,9 +49,12 @@ func TestCodexCatalogIncludesGPT55(t *testing.T) {
 		{name: "codex-static-channel", models: GetStaticModelDefinitionsByChannel("codex")},
 	}
 
+	requiredModels := []string{"gpt-5.5", "codex-auto-review"}
 	for _, tc := range cases {
-		if !hasModel(tc.models, "gpt-5.5") {
-			t.Fatalf("%s is missing gpt-5.5", tc.name)
+		for _, modelID := range requiredModels {
+			if !hasModel(tc.models, modelID) {
+				t.Fatalf("%s is missing %s", tc.name, modelID)
+			}
 		}
 	}
 }
